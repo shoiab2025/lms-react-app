@@ -7,39 +7,28 @@ import {
   MDBCard,
   MDBCardBody,
   MDBInput,
-  MDBIcon,
   MDBCheckbox,
 } from "mdb-react-ui-kit";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useLogin } from "../hooks/uselogin";
-import { Button } from "reactstrap";
-import { useAuthcontext } from "../contexts/Authcontext";
-import axios from "axios";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { setAuthUser } = useAuthcontext();
   const { login, loading } = useLogin();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setError(null);
     try {
-      const response = await axios.post("api/users/sign_in", {
-        usernameOrEmail: username,
-        password: password,
-      });
-      localStorage.setItem("status", response.status);
-      setAuthUser(data);
-    } catch (error) {
-      if (error.response) {
-        setError(error.response.data.message);
-      } else {
-        setError("An error occurred. Please try again.");
-      }
+      await login(username, password);
+      navigate("/"); // redirect after successful login
+    } catch (err) {
+      // `login` throws error with message on failure
+      console.log("the ERror", err)
+      setError(err.message);
     }
   };
 
@@ -53,7 +42,7 @@ const Login = () => {
           >
             <MDBCardBody className="p-5 w-100 d-flex flex-column">
               <h2 className="fw-bold mb-2 text-center">Sign in</h2>
-              <p className="text-white-50 mb-3">
+              <p className="text-black-50 mb-3">
                 Please enter your login and password!
               </p>
 
@@ -69,7 +58,7 @@ const Login = () => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                 />
-                <label htmlFor="username" className="form-label">
+                <label htmlFor="password" className="form-label">
                   Password
                 </label>
                 <MDBInput
@@ -80,6 +69,12 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
+
+                {error && (
+                  <p className="text-danger" style={{ marginBottom: "1rem" }}>
+                    {error}
+                  </p>
+                )}
 
                 <div className="d-flex justify-content-between">
                   <MDBCheckbox
@@ -98,20 +93,19 @@ const Login = () => {
                 </div>
                 <br />
                 <div className="d-flex justify-content-between my-1">
-                  <Button
+                  <MDBBtn
                     size="lg"
                     color="light"
-                    className=""
                     style={{ width: "47%" }}
                     onClick={() => navigate("/")}
                   >
                     Back
-                  </Button>
+                  </MDBBtn>
                   <MDBBtn
                     size="lg"
-                    className=""
                     type="submit"
                     style={{ width: "47%" }}
+                    disabled={loading}
                   >
                     {loading ? (
                       <span className="loading loading-spinner"></span>
