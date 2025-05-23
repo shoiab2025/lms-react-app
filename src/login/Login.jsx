@@ -11,6 +11,7 @@ import {
 } from "mdb-react-ui-kit";
 import { Link, useNavigate } from "react-router-dom";
 import { useLogin } from "../hooks/uselogin";
+import axios from 'axios';
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -22,14 +23,21 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-    try {
-      await login(username, password);
-      navigate("/"); // redirect after successful login
-    } catch (err) {
-      // `login` throws error with message on failure
-      console.log("the ERror", err)
-      setError(err.message);
-    }
+     try {
+          const response = await axios.post('/users/sign_in', {
+            usernameOrEmail: username,
+            password: password,
+          });
+          localStorage.setItem('status', response.status);
+    
+    
+        } catch (error) {
+          if (error.response) {
+            setError(error.response.data.message); 
+          } else {
+            setError('An error occurred. Please try again.'); 
+          }
+        }
   };
 
   return (
