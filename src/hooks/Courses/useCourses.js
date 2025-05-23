@@ -12,7 +12,7 @@ export const useCourse = () => {
         try {
             const baseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:2000';
 
-            const res = await fetch(`${baseUrl}/api/courses`, {
+            const res = await fetch(`/api/courses`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
