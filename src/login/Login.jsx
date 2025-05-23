@@ -14,17 +14,32 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useLogin } from "../hooks/uselogin";
 import { Button } from "reactstrap";
+import { useAuthcontext } from "../contexts/Authcontext";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-
+  const { setAuthUser } = useAuthcontext();
   const { login, loading } = useLogin();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await login(username, password);
+
+    try {
+      const response = await axios.post("api/users/sign_in", {
+        usernameOrEmail: username,
+        password: password,
+      });
+      localStorage.setItem("status", response.status);
+      setAuthUser(data);
+    } catch (error) {
+      if (error.response) {
+        setError(error.response.data.message);
+      } else {
+        setError("An error occurred. Please try again.");
+      }
+    }
   };
 
   return (
@@ -86,12 +101,17 @@ const Login = () => {
                     size="lg"
                     color="light"
                     className=""
-                    style={{width: "47%"}}
+                    style={{ width: "47%" }}
                     onClick={() => navigate("/")}
                   >
                     Back
                   </Button>
-                  <MDBBtn size="lg" className="" type="submit" style={{width: "47%"}}>
+                  <MDBBtn
+                    size="lg"
+                    className=""
+                    type="submit"
+                    style={{ width: "47%" }}
+                  >
                     {loading ? (
                       <span className="loading loading-spinner"></span>
                     ) : (
