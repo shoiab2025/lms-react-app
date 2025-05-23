@@ -14,7 +14,7 @@ export const useSubject = () => {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    credentials: true
+                    credentials: 'include'
                 },
             });
 
