@@ -27,7 +27,7 @@ const Login = () => {
           const response = await axios.post('/api/users/sign_in', {
             usernameOrEmail: username,
             password: password,
-          });
+          } ,{ withCredentials: true });
           localStorage.setItem('status', response.status);
     
     
